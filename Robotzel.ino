@@ -94,7 +94,7 @@ byte getDistance(byte nr)
     }
     nr--;
   }
-  return (posnr) ? (sum / posnr) : 0;
+  return (posnr) ? (sum / posnr) : 200;
 }
 
 void loop()
@@ -110,10 +110,13 @@ void loop()
             unsigned obstacle = getDistance(2); //#tries as parameter
             DBG_prints("SONAR: "); DBG_print(obstacle); DBG_printsln("cm");
             if (obstacle) {
-                if (obstacle < 20) { //less than 20cm ahead
-                    stop(); delay(1000);
-                    setBackward(MMAX, MMAX); delay(1000);
-                    stop(); delay(500);
+                if (obstacle < 30) { //less than 20cm ahead
+                    stop();
+                    delay(1000);
+                    setBackward(MMAX, MMAX);
+                    delay(3000);
+                    stop();
+                    delay(500);
                 }
                 else {
                     setForward(MMAX, MMAX);
@@ -122,6 +125,10 @@ void loop()
             //DBG_printsln("END_TASK_0");
             Tasks.time[TASK0] = millis();
         }
+    }
+    else
+    {
+        stop();
     }
     
     //Buzz distance
