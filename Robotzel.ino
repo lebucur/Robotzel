@@ -64,6 +64,7 @@ void setup()
   Bluetooth.begin(9600);
   Serial.begin(9600);
   DBG_println("SETUP");
+  print_commands();
   
   Tasks.interval[TASK0] = 50;   //motion
   Tasks.interval[TASK1] = 1000; //buzzer
@@ -209,14 +210,15 @@ void readBuffer()
             
             case 'm': //check memory
                 DBG_prints("Free RAM: ");
-                DBG_println(get_free_ram());
+                DBG_print(get_free_ram());
+                DBG_printsln(" bytes");
             break;
 
             case 'w': //fw
               setForward(MMAX, MMAX);
             break;
 
-            case ' ': //stop
+            case 'c': //stop
               stop();
             break;
 
@@ -233,6 +235,7 @@ void readBuffer()
             break;
             
             default:
+                print_commands();
             break;
         }
     }
@@ -242,22 +245,34 @@ void readBuffer()
     }
 }
 
+void print_commands()
+{
+    DBG_printsln("Commands:");
+    DBG_printsln("  b: debug Bluetooth");
+    DBG_printsln("  w: move forward");
+    DBG_printsln("  s: move backward");
+    DBG_printsln("  a: rotate left");
+    DBG_printsln("  d: rotate right");
+    DBG_printsln("  c: stop");
+    DBG_printsln("  m: show free RAM");
+}
+
 void debugBluetooth()
 {
 #if DEBUG
-	DBG_printsln("\n** Bluetooth terminal **");
-	char c = 100; //backquote ASCII
-	do {
-		while (Bluetooth.available()) {
-			Serial.write(Bluetooth.read());
-		}
-		while (Serial.available()) {
-			c = Serial.read();
-			Bluetooth.write(c);
-			Serial.write(c);
-		}
-	} while (c != '`');
-	DBG_printsln("\n** Quit terminal **");
+    DBG_printsln("\n** Bluetooth terminal **");
+    char c = 100; //backquote ASCII
+    do {
+        while (Bluetooth.available()) {
+            Serial.write(Bluetooth.read());
+        }
+        while (Serial.available()) {
+            c = Serial.read();
+            Bluetooth.write(c);
+            Serial.write(c);
+        }
+    } while (c != '`');
+    DBG_printsln("\n** Quit terminal **");
 #endif
 }
 
