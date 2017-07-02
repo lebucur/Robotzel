@@ -104,6 +104,7 @@ void loop()
     //Check obstacle & Adjust trajectory
     if (Tasks.active & BIT(0))
     {
+        stopped = false;
         if (millis() - Tasks.time[TASK0] > Tasks.interval[TASK0])
         {
             //DBG_printsln("\nSTART_TASK_0");
@@ -128,7 +129,10 @@ void loop()
     }
     else
     {
-        stop();
+        if (!stopped) {
+            stop();
+            stopped = true;
+        }
     }
     
     //Buzz distance
@@ -233,6 +237,10 @@ void readBuffer()
               setBackward(MMAX, MMAX);
             break;
 
+            case 'h': //horn
+                horn(600);
+            break;
+
             case 'a': //left
               setForward(MMIN, MMAX);
             break;
@@ -262,6 +270,7 @@ void print_commands()
     DBG_printsln("  d: rotate right");
     DBG_printsln("  c: stop");
     DBG_printsln("  m: show free RAM");
+    DBG_printsln("  h: horn");
 }
 
 void debugBluetooth()
@@ -296,7 +305,6 @@ void setForward(byte left, byte right)
   analogWrite(Pins.ML2, MMIN);
   analogWrite(Pins.MR1, right);
   analogWrite(Pins.MR2, MMIN);
-  stopped = false;
 }
 
 void setBackward(byte left, byte right)
@@ -305,11 +313,9 @@ void setBackward(byte left, byte right)
   analogWrite(Pins.ML2, left);
   analogWrite(Pins.MR1, MMIN);
   analogWrite(Pins.MR2, right);
-  stopped = false;
 }
 
 void stop()
 {
     setBackward(0, 0);
-    stopped = true;
 }
